@@ -18,7 +18,7 @@ export default function ItemList() {
 
   return (
     <div className="w-full">
-      <h2 className="text-xl font-semibold mb-4">Current Drinks</h2>
+      <h2 className="text-xl text-white font-semibold mb-4">Current Drinks</h2>
 
       <ul className="w-full bg-gray-900 p-4 rounded-md">
         {loading && (<li className="text-gray-500">Loading...</li>)}
