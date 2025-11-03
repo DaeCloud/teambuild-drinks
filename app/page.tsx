@@ -86,8 +86,7 @@ export default function Home() {
                     Deployed on <b>Azure Container Apps</b><br />Fueled by <b>Azure Cosmos DB</b>.
                   </span>
                   <span className="italic text-blue-200">
-                    #LearningAzure — so why not build this elaborate drink request app? ¯\_(ツ)_/¯<br />
-                    (Yes, a Teams chat could&apos;ve done the job… but where&apos;s the fun in that? ☁️)
+                    #LearningAzure — so why not build this elaborate &amp; unnecessary drink request app? ¯\_(ツ)_/¯
                   </span>
 
                 </div>
