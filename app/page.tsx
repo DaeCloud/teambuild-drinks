@@ -7,12 +7,14 @@ import ItemList from "./components/ItemList";
 
 export default function Home() {
   const [deployment, setDeployment] = useState('undefined');
+  const [version, setVersion] = useState('undefined');
 
   useEffect(() => {
     fetch('/api/server')
       .then(r => r.json())
       .then(tmp => {
         setDeployment(tmp.deployment);
+        setVersion(tmp.version);
       });
   }, []);
 
@@ -78,7 +80,7 @@ export default function Home() {
               </div>
             </div>
 
-            {deployment === 'azure' && (
+            {deployment.toLocaleLowerCase().includes('azure') && (
               <div className="mt-2 inline-flex items-center gap-2 rounded-md bg-gradient-to-r from-[#0078D4] via-[#5E5E5E] to-[#0078D4] px-3 py-2 text-sm text-white shadow-sm">
                 <span className="text-2xl leading-none">☁️</span>
                 <div className="flex flex-col leading-tight">
@@ -101,6 +103,10 @@ export default function Home() {
           </div>
 
         </main>
+      </div>
+
+      <div className="w-full bg-gray-900 text-center py-4 text-sm text-gray-500">
+        <span>Deployment: <b>{deployment}</b>&nbsp; |&nbsp; Version: <b>{version}</b></span>
       </div>
     </div>
   );
