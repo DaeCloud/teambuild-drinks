@@ -2,16 +2,14 @@ import { NextResponse } from 'next/server';
 import mariadb from 'mariadb';
 import { Drink } from '../../models/drink';
 
-import { PagedAsyncIterableIterator } from '@azure/core-paging';
-import { DefaultAzureCredential, TokenCredential } from '@azure/identity';
 import { Container, CosmosClient, Database, FeedResponse, ItemResponse, SqlQuerySpec } from '@azure/cosmos';
 import { randomUUID } from 'node:crypto';
 
 const pool = mariadb.createPool({
-    host: process.env.DB_HOST,     // e.g. "mydb.example.com"
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_NAME,
+    host: process.env.DB_HOST || '',     // e.g. "mydb.example.com"
+    user: process.env.DB_USER || '',
+    password: process.env.DB_PASS || '',
+    database: process.env.DB_NAME || '',
     connectionLimit: 5,
 });
 
@@ -27,7 +25,7 @@ class DrinkItem {
 }
 
 function ConnectDatabase() {
-    return new CosmosClient("AccountEndpoint=" + process.env.COSMOS_DB_ENDPOINT + ";AccountKey=" + process.env.COSMOS_DB_KEY + ";");
+    return new CosmosClient("AccountEndpoint=" + process.env.COSMOS_DB_ENDPOINT || '' + ";AccountKey=" + process.env.COSMOS_DB_KEY || '' + ";");
 }
 
 export async function GET() {
