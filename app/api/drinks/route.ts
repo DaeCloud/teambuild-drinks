@@ -31,7 +31,7 @@ function ConnectDatabase() {
 }
 
 export async function GET() {
-    if(process.env.DEPLOYMENT === 'azure') {
+    if(process.env.DEPLOYMENT?.toLocaleLowerCase().includes('azure')) {
         try {
             const cosmosClient = ConnectDatabase();
             const database: Database = cosmosClient.database(process.env.COSMOS_DB_ID || 'mydb');
@@ -59,7 +59,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-    if(process.env.DEPLOYMENT === 'azure') {
+    if(process.env.DEPLOYMENT?.toLocaleLowerCase().includes('azure')) {
         try {
             const { name } = await request.json();
             const drinkItem = new DrinkItem(name);
@@ -87,7 +87,7 @@ export async function POST(request: Request) {
 }
 
 export async function UPDATE(request: Request) {
-    if(process.env.DEPLOYMENT === 'azure') {
+    if(process.env.DEPLOYMENT?.toLocaleLowerCase().includes('azure')) {
         try {
             const { id, status } = await request.json();
             const cosmosClient = ConnectDatabase();
