@@ -1,7 +1,11 @@
 import { NextResponse } from 'next/server';
 import mariadb from 'mariadb';
 import { Drink } from '../../models/drink';
-import { stat } from 'fs';
+
+import { PagedAsyncIterableIterator } from '@azure/core-paging';
+import { DefaultAzureCredential, TokenCredential } from '@azure/identity';
+import { Container, CosmosClient, Database, FeedResponse, ItemResponse, SqlQuerySpec } from '@azure/cosmos';
+import { randomUUID } from 'node:crypto';
 
 const pool = mariadb.createPool({
     host: process.env.DB_HOST,     // e.g. "mydb.example.com"
@@ -11,7 +15,38 @@ const pool = mariadb.createPool({
     connectionLimit: 5,
 });
 
+class DrinkItem {
+    id?: string;
+    name: string;
+    status: string;
+    constructor(name: string) {
+        this.id = randomUUID();
+        this.name = name;
+        this.status = 'none';
+    }
+}
+
+function ConnectDatabase() {
+    return new CosmosClient("AccountEndpoint=" + process.env.COSMOS_DB_ENDPOINT + ";AccountKey=" + process.env.COSMOS_DB_KEY + ";");
+}
+
 export async function GET() {
+    if(process.env.DEPLOYMENT === 'azure') {
+        try {
+            const cosmosClient = ConnectDatabase();
+            const database: Database = cosmosClient.database(process.env.COSMOS_DB_ID || 'mydb');
+            const container: Container = database.container(process.env.COSMOS_DB_CONTAINER || 'teambuild-drinks');
+            const querySpec: SqlQuerySpec = {
+                query: 'SELECT c.id, c.name, c.status FROM c'
+            };
+            const { resources: items }: FeedResponse<DrinkItem> = await container.items.query<DrinkItem>(querySpec).fetchAll();
+            return NextResponse.json(items);
+        } catch (err) {
+            console.error(err);
+            return NextResponse.json({ status: 'error', message: 'Database error' }, { status: 500 });
+        }
+    }
+
     try {
         const conn = await pool.getConnection();
         const rows: Drink[] = await conn.query('SELECT id, name, status FROM Drinks');
@@ -24,6 +59,21 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+    if(process.env.DEPLOYMENT === 'azure') {
+        try {
+            const { name } = await request.json();
+            const drinkItem = new DrinkItem(name);
+            const cosmosClient = ConnectDatabase();
+            const database: Database = cosmosClient.database(process.env.COSMOS_DB_ID || 'mydb');
+            const container: Container = database.container(process.env.COSMOS_DB_CONTAINER || 'teambuild-drinks');
+            const { resource: createdItem }: ItemResponse<DrinkItem> = await container.items.create(drinkItem);
+            return NextResponse.json(createdItem);
+        } catch (err) {
+            console.error(err);
+            return NextResponse.json({ status: 'error', message: 'Database error' }, { status: 500 });
+        }
+    }
+
     try {
         const { name } = await request.json();
         const conn = await pool.getConnection();
@@ -37,6 +87,21 @@ export async function POST(request: Request) {
 }
 
 export async function UPDATE(request: Request) {
+    if(process.env.DEPLOYMENT === 'azure') {
+        try {
+            const { id, status } = await request.json();
+            const cosmosClient = ConnectDatabase();
+            const database: Database = cosmosClient.database(process.env.COSMOS_DB_ID || 'mydb');
+            const container: Container = database.container(process.env.COSMOS_DB_CONTAINER || 'teambuild-drinks');
+            const item = container.item(id);
+            await item.replace({ id: id, status: status });
+            return NextResponse.json({ status: 'success' });
+        } catch (err) {
+            console.error(err);
+            return NextResponse.json({ status: 'error', message: 'Database error' }, { status: 500 });
+        }
+    }
+
     try {
         const { id, status } = await request.json();
         const conn = await pool.getConnection();
