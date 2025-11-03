@@ -22,14 +22,14 @@ export default function Home() {
 
       <div className="flex min-h-screen items-center justify-center font-sans bg-black text-white">
         <main className="flex min-h-screen w-full max-w-6xl flex-col sm:flex-row justify-between py-20 px-6 sm:px-16 gap-10">
-          
+
           {/* LEFT COLUMN */}
           <div className="flex flex-col gap-6 w-full sm:w-1/2 text-left">
             <h1 className="text-3xl font-semibold leading-10 tracking-tight text-zinc-50">
               Please add your drink requests for the team build!
             </h1>
             <p className="text-zinc-200">
-              For the upcoming team build, please specify the drinks you would like so I can make sure we have something for everyone. 
+              For the upcoming team build, please specify the drinks you would like so I can make sure we have something for everyone.
               I won&apos;t necessarily get everything requested, but I&apos;d like to have something for everyone.
             </p>
 
@@ -67,8 +67,8 @@ export default function Home() {
                     Location: <b>Daelin’s house</b>
                     <br />
                     Casual hangout with food, drinks, and possibly questionable competitiveness.
-                    <br />
-                    (This is where your drink requests come in 🍻)
+                    <br /><br />
+                    Activities may include: 🎱 pool/snooker, 🏓 table tennis, ⚽ foosball, 🎯 darts, 🃏 poker
                   </p>
                 </div>
 
@@ -86,8 +86,10 @@ export default function Home() {
                     Deployed on <b>Azure Container Apps</b><br />Fueled by <b>Azure Cosmos DB</b>.
                   </span>
                   <span className="italic text-blue-200">
-                    #LearningAzure — so why not build this elaborate drink request app? ¯\_(ツ)_/¯
+                    #LearningAzure — so why not build this elaborate drink request app? ¯\_(ツ)_/¯<br />
+                    (Yes, a Teams chat could&apos;ve done the job… but where&apos;s the fun in that? ☁️)
                   </span>
+
                 </div>
               </div>
             )}
