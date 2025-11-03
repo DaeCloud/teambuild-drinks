@@ -25,7 +25,7 @@ class DrinkItem {
 }
 
 function ConnectDatabase() {
-    return new CosmosClient("AccountEndpoint=" + process.env.COSMOS_DB_ENDPOINT || '' + ";AccountKey=" + process.env.COSMOS_DB_KEY || '' + ";");
+    return new CosmosClient("AccountEndpoint=" + process.env.COSMOS_DB_ENDPOINT + ";AccountKey=" + process.env.COSMOS_DB_KEY + ";");
 }
 
 export async function GET() {
