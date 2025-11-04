@@ -8,6 +8,7 @@ import ItemList from "./components/ItemList";
 export default function Home() {
   const [deployment, setDeployment] = useState('undefined');
   const [version, setVersion] = useState('undefined');
+  const [joke, setJoke] = useState<string | null>(null); 
 
   useEffect(() => {
     fetch('/api/server')
@@ -15,6 +16,14 @@ export default function Home() {
       .then(tmp => {
         setDeployment(tmp.deployment);
         setVersion(tmp.version);
+      });
+
+    fetch('/api/joke')
+      .then(r => r.json())
+      .then(data => {
+        if (data.joke) {
+          setJoke(data.joke);
+        }
       });
   }, []);
 
@@ -79,6 +88,17 @@ export default function Home() {
                 </p>
               </div>
             </div>
+
+            {joke && (
+              <div className="rounded-lg border border-blue-500/40 bg-blue-950/40 p-4 text-white shadow-md backdrop-blur-sm">
+                <h2 className="text-lg font-semibold text-blue-300 mb-1">
+                    Random Dad Joke
+                </h2>
+                <div className="text-sm text-blue-100 space-y-2">
+                  {joke}
+                </div>
+              </div>
+            )}
 
             {deployment.toLocaleLowerCase().includes('azure') && (
               <div className="mt-2 inline-flex items-center gap-2 rounded-md bg-gradient-to-r from-[#0078D4] via-[#5E5E5E] to-[#0078D4] px-3 py-2 text-sm text-white shadow-sm">
