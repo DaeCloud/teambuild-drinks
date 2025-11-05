@@ -90,38 +90,42 @@ export default function InteractiveInput() {
   }
 
   async function handleAdd() {
-  const button = document.querySelector("#addBtn");
-  
-  if (!button) return console.error("Add button not found");
+  const button = document.querySelector("#addBtn") as HTMLButtonElement | null;
+  if (!button) {
+    console.error("Add button not found");
+    return;
+  }
+
   if (!value.trim()) return;
 
   // Disable button and show loading text
   button.disabled = true;
-  const originalText = button.textContent;
+  const originalText = button.textContent || "";
   button.textContent = "Adding...";
 
   try {
-    const response = await fetch('/api/drinks', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const response = await fetch("/api/drinks", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name: value }),
     });
 
     if (response.ok) {
       const newDrink = await response.json();
-      console.log('Added:', newDrink);
+      console.log("Added:", newDrink);
       window.location.reload();
     } else {
-      console.error('Failed to add drink');
+      console.error("Failed to add drink");
       button.disabled = false;
       button.textContent = originalText;
     }
   } catch (error) {
-    console.error('Error adding drink:', error);
+    console.error("Error adding drink:", error);
     button.disabled = false;
     button.textContent = originalText;
   }
 }
+
 
 
   return (
