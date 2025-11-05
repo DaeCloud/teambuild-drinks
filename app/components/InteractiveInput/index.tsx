@@ -90,27 +90,39 @@ export default function InteractiveInput() {
   }
 
   async function handleAdd() {
-    if (value.trim()) {
+  const button = document.querySelector("#addBtn");
+  
+  if (!button) return console.error("Add button not found");
+  if (!value.trim()) return;
 
-      const response = await fetch('/api/drinks', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name: value }),
-      });
+  // Disable button and show loading text
+  button.disabled = true;
+  const originalText = button.textContent;
+  button.textContent = "Adding...";
 
-      if (response.ok) {
-        const newDrink = await response.json();
-        console.log('Added:', newDrink);
+  try {
+    const response = await fetch('/api/drinks', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: value }),
+    });
 
-        // refresh the page
-        window.location.reload();
-      } else {
-        console.error('Failed to add drink');
-      }
+    if (response.ok) {
+      const newDrink = await response.json();
+      console.log('Added:', newDrink);
+      window.location.reload();
+    } else {
+      console.error('Failed to add drink');
+      button.disabled = false;
+      button.textContent = originalText;
     }
+  } catch (error) {
+    console.error('Error adding drink:', error);
+    button.disabled = false;
+    button.textContent = originalText;
   }
+}
+
 
   return (
     <div className="relative w-full max-w-md">
@@ -124,6 +136,7 @@ export default function InteractiveInput() {
         />
         <button
           onClick={handleAdd}
+          id="addBtn"
           className="px-4 py-2  rounded-md bg-white text-black hover:bg-gray-200 hover:cursor-pointer"
         >
           Add
