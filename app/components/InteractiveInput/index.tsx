@@ -1,10 +1,20 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Drink } from '../../models/drink';
 
 export default function InteractiveInput() {
   const [value, setValue] = useState('');
   const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [drinks, setDrinks] = useState<Drink[]>([]);
+
+  useEffect(() => {
+    const fetchDrinks = async () => {
+      const drinks: Drink[] = await fetch('/api/drinks').then(r => r.json());
+      setDrinks(drinks);
+    };
+    fetchDrinks();
+  }, []);
 
   const drinkOptions = [
     'Beer',
@@ -70,6 +80,8 @@ export default function InteractiveInput() {
   ];
 
   function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const button = document.querySelector("#addBtn") as HTMLButtonElement | null;
+
     const inputValue = event.target.value;
     setValue(inputValue);
 
@@ -82,6 +94,19 @@ export default function InteractiveInput() {
       drink.toLowerCase().includes(inputValue.toLowerCase())
     );
     setSuggestions(filteredSuggestions);
+
+    if (!button) {
+      console.error("Add button not found");
+    } else {
+      if(drinks.map(drink => drink.name.trim().toLowerCase()).includes(inputValue.trim().toLowerCase())){
+        button.disabled = true;
+        button.textContent = "Already Added";
+        return;
+      } else {
+        button.disabled = false;
+        button.textContent = "Add";
+      }
+    }
   }
 
   function handleSuggestionClick(suggestion: string) {
@@ -90,7 +115,7 @@ export default function InteractiveInput() {
   }
 
   async function handleAdd() {
-  const button = document.querySelector("#addBtn") as HTMLButtonElement | null;
+    const button = document.querySelector("#addBtn") as HTMLButtonElement | null;
   if (!button) {
     console.error("Add button not found");
     return;
