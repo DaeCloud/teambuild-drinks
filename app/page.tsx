@@ -51,7 +51,7 @@ export default function Home() {
               </h2>
               <div className="text-sm text-blue-100 space-y-2">
                 <p>
-                  <b>Date:</b> 25 November 2025<br />
+                  <b>Date:</b> 13 November 2025<br />
                   <b>Time:</b> 15:30 — 19:30
                 </p>
 
