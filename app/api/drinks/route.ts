@@ -17,10 +17,12 @@ class DrinkItem {
     id?: string;
     name: string;
     status: string;
+    purchased: boolean;
     constructor(name: string) {
         this.id = randomUUID();
         this.name = name;
         this.status = 'none';
+        this.purchased = false;
     }
 }
 
@@ -35,7 +37,7 @@ export async function GET() {
             const database: Database = cosmosClient.database(process.env.COSMOS_DB_ID || 'mydb');
             const container: Container = database.container(process.env.COSMOS_DB_CONTAINER || 'teambuild-drinks');
             const querySpec: SqlQuerySpec = {
-                query: 'SELECT c.id, c.name, c.status FROM c'
+                query: 'SELECT c.id, c.name, c.status, c.purchased FROM c'
             };
             const { resources: items }: FeedResponse<DrinkItem> = await container.items.query<DrinkItem>(querySpec).fetchAll();
             return NextResponse.json(items);
@@ -47,7 +49,7 @@ export async function GET() {
 
     try {
         const conn = await pool.getConnection();
-        const rows: Drink[] = await conn.query('SELECT id, name, status FROM Drinks');
+        const rows: Drink[] = await conn.query('SELECT id, name, status, purchased FROM Drinks');
         conn.release();
         return NextResponse.json(rows);
     } catch (err) {
@@ -75,7 +77,7 @@ export async function POST(request: Request) {
     try {
         const { name } = await request.json();
         const conn = await pool.getConnection();
-        const result = await conn.query('INSERT INTO Drinks (name, status) VALUES (?, ?)', [name, 'none']);
+        const result = await conn.query('INSERT INTO Drinks (name, status, purchased) VALUES (?, ?, ?)', [name, 'none', false]);
         conn.release();
         return NextResponse.json({ status: 'success' });
     } catch (err) {
@@ -87,12 +89,12 @@ export async function POST(request: Request) {
 export async function UPDATE(request: Request) {
     if(process.env.DEPLOYMENT?.toLocaleLowerCase().includes('azure')) {
         try {
-            const { id, status } = await request.json();
+            const { id, status, purchased } = await request.json();
             const cosmosClient = ConnectDatabase();
             const database: Database = cosmosClient.database(process.env.COSMOS_DB_ID || 'mydb');
             const container: Container = database.container(process.env.COSMOS_DB_CONTAINER || 'teambuild-drinks');
             const item = container.item(id);
-            await item.replace({ id: id, status: status });
+            await item.replace({ id: id, status: status, purchased: purchased });
             return NextResponse.json({ status: 'success' });
         } catch (err) {
             console.error(err);
@@ -101,9 +103,9 @@ export async function UPDATE(request: Request) {
     }
 
     try {
-        const { id, status } = await request.json();
+        const { id, status, purchased } = await request.json();
         const conn = await pool.getConnection();
-        const result = await conn.query('UPDATE Drinks SET status = ? WHERE id = ?', [status, id]);
+        const result = await conn.query('UPDATE Drinks SET status = ?, purchased = ? WHERE id = ?', [status, purchased, id]);
         conn.release();
         return NextResponse.json({ status: 'success' });
     } catch (err) {

@@ -31,22 +31,30 @@ export default function ItemList() {
             className="text-white flex justify-between items-center border-b border-gray-700 py-2 last:border-b-0"
           >
             <span>{item.name}</span>
-            <span
-              className={`text-xs font-semibold px-3 py-1 rounded-full capitalize
+            <div>
+              <span
+                className={`text-xs font-semibold px-3 py-1 rounded-full capitalize mx-1
                 ${item.status === 'accepted'
-                  ? 'bg-green-500/20 text-green-400'
-                  : item.status === 'rejected'
-                    ? 'bg-red-500/20 text-red-400'
-                    : item.status === 'purchased'
-                      ? 'bg-blue-500/20 text-blue-400'
-                      : item.status === 'none'
-                        ? 'opacity-0'
-                        : 'bg-yellow-500/20 text-yellow-400'
-                }`}
-            >
-              {item.status}
-            </span>
-
+                    ? 'bg-green-500/20 text-green-400'
+                    : item.status === 'rejected'
+                      ? 'bg-red-500/20 text-red-400'
+                      : item.status === 'purchased'
+                        ? 'bg-blue-500/20 text-blue-400'
+                        : item.status === 'none'
+                          ? 'opacity-0'
+                          : 'bg-yellow-500/20 text-yellow-400'
+                  }`}
+              >
+                {item.status}
+              </span>
+              {item.purchased == true && (
+                <span
+                  className={`text-xs font-semibold px-3 py-1 rounded-full capitalize bg-blue-500/20 text-blue-400 mx-1`}
+                >
+                  Purchased
+                </span>
+              )}
+            </div>
           </li>
         ))}
       </ul>
